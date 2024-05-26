@@ -42,7 +42,6 @@ const SignUp = () => {
                 data: newUser,
                 method: 'POST'
             });
-            console.log(response);
             if (!response || !response.data) {
                 throw new Error('Invalid response from server');
             }

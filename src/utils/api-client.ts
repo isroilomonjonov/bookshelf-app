@@ -36,23 +36,17 @@ export const apiClient = async (
     throw new Error("Missing key or secret");
   }
   const url = `${endpoint}`;
-  console.log(url, method, data);
-
   const sign = getSignature(method, url, data, secret);
-
   const headers = {
     "Content-Type": "application/json",
     key,
     sign,
   };
-
   const response = await axiosInstance({
     method,
     url,
     headers,
     data: data,
   });
-  console.log(response);
-
   return response.data.data;
 };
