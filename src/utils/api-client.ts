@@ -1,28 +1,40 @@
 import { Method } from "axios";
 import CryptoJS from "crypto-js";
 import axiosInstance from "./axios-instance";
-
+import { BookType } from "../components/Books/books";
+interface Body {
+  isbn?: number;
+  book?: BookType;
+}
 const getSignature = (
   method: Method,
   url: string,
-  body: string,
+  body: Body,
   secret: string
 ): string => {
-  const signstr = method + url + body + secret;
+  console.log(body);
+  let newBody;
+  if (body?.isbn || body?.book) {
+    newBody = JSON.stringify(body);
+  } else {
+    newBody = "";
+  }
+  const signstr = method + url + newBody + secret;
   return CryptoJS.MD5(signstr).toString();
 };
 
 export const apiClient = async (
   method: Method,
   endpoint: string,
-  data: string = ""
+  data: object = {},
+  navigate?: (path: string) => void
 ) => {
   const key = localStorage.getItem("key");
   const secret = localStorage.getItem("secret");
   if (!key || !secret) {
+    navigate && navigate("/login");
     throw new Error("Missing key or secret");
   }
-
   const url = `${endpoint}`;
   console.log(url, method, data);
 
@@ -38,7 +50,7 @@ export const apiClient = async (
     method,
     url,
     headers,
-    data,
+    data: data,
   });
   console.log(response);
 

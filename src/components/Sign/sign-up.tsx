@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from '@tanstack/react-query';
 import axiosInstance from "../../utils/axios-instance";
+import { useNavigate } from "react-router-dom";
 const userScheme = z.object({
     name: z.string().min(2, { message: "Name must be at least 2 characters" }),
     email: z.string().email(),
@@ -27,6 +28,7 @@ interface SignupResponse {
     secret: string;
 }
 const SignUp = () => {
+    const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof userScheme>>({
         resolver: zodResolver(userScheme)
     })
@@ -44,6 +46,7 @@ const SignUp = () => {
             if (!response || !response.data) {
                 throw new Error('Invalid response from server');
             }
+            navigate('/');
             return response.data.data;
         },
         onSuccess: async (data: SignupResponse | undefined) => {

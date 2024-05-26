@@ -7,6 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import SignUp from './components/Sign/sign-up.tsx';
+import AddEditBook from './components/Books/add-edit-books/add-edit-book.tsx';
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <SignUp />,
+  },
+  {
+    path: "/books/:id",
+    element: <AddEditBook />,
   },
 ]);
 ReactDOM.createRoot(document.getElementById('root')!).render(
