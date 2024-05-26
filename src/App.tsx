@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from './utils/api-client';
 import './App.css'
+import Books from './components/Books/books';
 interface UserProfileData {
   name: string;
   email: string;
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <h1>Main Page</h1>
+      <Books />
     </>
   )
 }
