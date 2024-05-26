@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../utils/api-client';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 export type BookType = {
     id: number,
@@ -18,8 +18,27 @@ export type BookInArray = {
     status: number
 }
 const Books = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [searchParams, setSearchParams] = useSearchParams();
     const [open, setOpen] = useState(false);
+    const search = searchParams.get("search");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [searchVal, setSearchVal] = useState("");
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchVal?.length > 0) {
+                navigate(
+                    `.?search=${searchVal}`
+                );
+            } else {
+                navigate("/");
+            }
+        }, 0.5);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [searchVal]);
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -34,42 +53,64 @@ const Books = () => {
     const handleClose = () => {
         setOpen(false);
     };
-
+    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchVal(e.target.value);
+    };
     const navigate = useNavigate();
     const { data, error, isLoading } = useQuery<BookInArray[], Error>({
-        queryKey: ['allBooks'], queryFn: () =>
-            apiClient('GET', '/books')
+        queryKey: ['allBooks', search], queryFn: () => {
+            if (search) {
+                return apiClient('GET', `/books/${search}`);
+            } else {
+                return apiClient('GET', '/books')
+            }
+        }
     });
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
     return (
-        <div><h2>Books</h2> {data ? data?.length > 0 && data.map((book) => <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }} key={book?.book?.id}><h3>Book: {book?.book?.id}</h3> <Button onClick={() => navigate(`/books/${book?.book?.id}`)} variant="contained">Update</Button> <React.Fragment>
-            <Button variant="outlined" onClick={handleClickOpen}>
-                Delete
-            </Button>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="responsive-dialog-title"
-            >
-                <DialogTitle id="responsive-dialog-title">
-                    {"Do you want delete this book?"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        If you want to delete this book please click on "Delete" or you can click on "Close"
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button autoFocus onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button onClick={() => handleDelete(book.book.id)} autoFocus>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </React.Fragment></div>) : "no data"}</div>
+        <div>
+            <TextField
+                size='small'
+                onChange={changeHandler}
+                placeholder="Search..."
+            />
+            {isLoading && <div>Loading...</div>}
+            {error && <div>Error: {error.message}</div>}
+            {data && <div>
+                <h2>Books</h2>
+                {data ? data?.length > 0 && data.map((book) => <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }} key={book?.book?.id}>
+                    <h3>Book: {book?.book?.id}</h3>
+                    {book?.book?.title && <h3>{book?.book?.title}</h3>}
+                    <Button onClick={() => navigate(`/books/${book?.book?.id}`)} variant="contained">Update</Button>
+                    <React.Fragment>
+                        <Button variant="outlined" onClick={handleClickOpen}>
+                            Delete
+                        </Button>
+                        <Dialog
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="responsive-dialog-title"
+                        >
+                            <DialogTitle id="responsive-dialog-title">
+                                {"Do you want delete this book?"}
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    If you want to delete this book please click on "Delete" or you can click on "Close"
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button autoFocus onClick={handleClose}>
+                                    Close
+                                </Button>
+                                <Button onClick={() => handleDelete(book.book.id)} autoFocus>
+                                    Delete
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </React.Fragment></div>) : "no data"}
+            </div>}
+
+        </div>
     )
 }
 
