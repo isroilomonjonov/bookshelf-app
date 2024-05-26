@@ -19,7 +19,7 @@ export type BookInArray = {
 }
 const Books = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const [open, setOpen] = useState(false);
     const search = searchParams.get("search");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
