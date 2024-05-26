@@ -21,10 +21,17 @@ function App() {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-
+  const logOut = () => {
+    localStorage.removeItem('key');
+    localStorage.removeItem('secret');
+    navigate('/login');
+  }
   return (
     <>
-      <h1>Main Page</h1>
+      <div className='flex'>
+        <h1>Main Page</h1>
+        <Button onClick={logOut} variant='text'>Log Out</Button>
+      </div>
       <div className='flex'>
         <h2>{'Hello ' + data?.name + '!'} </h2>
         <Button onClick={() => navigate('/books/new')} variant='contained'>Create Book</Button>
