@@ -41,13 +41,12 @@ const SignUp = () => {
                 method: 'POST'
             });
             console.log(response);
-
             if (!response || !response.data) {
                 throw new Error('Invalid response from server');
             }
             return response.data.data;
         },
-        onSuccess: (data: SignupResponse | undefined) => {
+        onSuccess: async (data: SignupResponse | undefined) => {
             if (!data) {
                 throw new Error('Data is null or undefined');
             }
@@ -57,6 +56,7 @@ const SignUp = () => {
             }
             localStorage.setItem('key', data.key);
             localStorage.setItem('secret', data.secret);
+
         },
         onError: (error) => {
             console.error('Error occurred during signup:', error);

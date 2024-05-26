@@ -19,7 +19,7 @@ axiosInstance.interceptors.response.use(
         error.response.data.message === "jwt expired") ||
       error.response.status === 401
     ) {
-      window.location.replace("/login");
+      // window.location.replace("/login");
     }
     return Promise.reject(error);
   }
